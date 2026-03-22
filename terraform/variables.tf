@@ -73,7 +73,7 @@ variable "db_subnet_2_cidr" {
 variable "vm_size" {
   description = "VM size for all tiers"
   type        = string
-  default     = "Standard_D2s_v3"
+  default     = "Standard_B1ms"
 }
 
 variable "admin_username" {

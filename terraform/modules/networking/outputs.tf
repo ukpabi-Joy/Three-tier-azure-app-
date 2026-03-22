@@ -47,3 +47,8 @@ output "mysql_dns_zone_name" {
   description = "MySQL Private DNS Zone name"
   value       = azurerm_private_dns_zone.mysql_dns_jukpabi.name
 }
+
+output "dns_vnet_link_id" {
+  description = "DNS VNet link ID — passed to db_tier to ensure DNS is linked before MySQL"
+  value       = azurerm_private_dns_zone_virtual_network_link.dns_link_jukpabi.id
+}

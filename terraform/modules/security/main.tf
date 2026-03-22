@@ -71,27 +71,53 @@ resource "azurerm_network_security_group" "app_nsg_jukpabi" {
 
   # Allow port 3001 from Web Tier only
   security_rule {
-    name                       = "allow-web-tier"
+    name                       = "allow-web-tier-3001"
     priority                   = 100
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3001"
-    source_address_prefix      = "10.0.1.0/23"
+    source_address_prefix      = "10.0.1.0/24"
     destination_address_prefix = "*"
   }
 
-  # Allow SSH from Web Tier only
+  # Allow port 3001 from Web Tier subnet 2
   security_rule {
-    name                       = "allow-ssh-from-web"
+    name                       = "allow-web-tier-2-3001"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3001"
+    source_address_prefix      = "10.0.2.0/24"
+    destination_address_prefix = "*"
+  }
+
+  # Allow SSH from Web Tier subnet 1
+  security_rule {
+    name                       = "allow-ssh-from-web-1"
     priority                   = 200
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "10.0.1.0/23"
+    source_address_prefix      = "10.0.1.0/24"
+    destination_address_prefix = "*"
+  }
+
+  # Allow SSH from Web Tier subnet 2
+  security_rule {
+    name                       = "allow-ssh-from-web-2"
+    priority                   = 210
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "10.0.2.0/24"
     destination_address_prefix = "*"
   }
 
@@ -118,16 +144,29 @@ resource "azurerm_network_security_group" "db_nsg_jukpabi" {
   location            = var.location
   resource_group_name = var.resource_group_name
 
-  # Allow MySQL from App Tier only
+  # Allow MySQL from App Tier subnet 1
   security_rule {
-    name                       = "allow-app-tier"
+    name                       = "allow-app-tier-1-mysql"
     priority                   = 100
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3306"
-    source_address_prefix      = "10.0.3.0/23"
+    source_address_prefix      = "10.0.3.0/24"
+    destination_address_prefix = "*"
+  }
+
+  # Allow MySQL from App Tier subnet 2
+  security_rule {
+    name                       = "allow-app-tier-2-mysql"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "3306"
+    source_address_prefix      = "10.0.4.0/24"
     destination_address_prefix = "*"
   }
 

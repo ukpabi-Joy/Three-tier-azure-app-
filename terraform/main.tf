@@ -23,6 +23,7 @@ resource "azurerm_resource_group" "rg_jukpabi" {
 }
 
 # --- Networking Module ---
+# Must run first — all other modules depend on its outputs
 module "networking" {
   source              = "./modules/networking"
   resource_group_name = azurerm_resource_group.rg_jukpabi.name
@@ -37,6 +38,7 @@ module "networking" {
 }
 
 # --- Security Module ---
+# Depends on networking outputs for subnet IDs
 module "security" {
   source              = "./modules/security"
   resource_group_name = azurerm_resource_group.rg_jukpabi.name
@@ -50,21 +52,25 @@ module "security" {
 }
 
 # --- DB Tier Module ---
+# Depends on networking for subnets + DNS zone + DNS link
+# dns_vnet_link_id ensures DNS is linked before MySQL is created
 module "db_tier" {
-  source              = "./modules/db_tier"
-  resource_group_name = azurerm_resource_group.rg_jukpabi.name
-  location            = azurerm_resource_group.rg_jukpabi.location
-  db_subnet_1_id      = module.networking.db_subnet_1_id
-  db_subnet_2_id      = module.networking.db_subnet_2_id
-  mysql_dns_zone_id   = module.networking.mysql_dns_zone_id
-  mysql_dns_zone_name = module.networking.mysql_dns_zone_name
-  db_admin_username   = var.db_admin_username
-  db_admin_password   = var.db_admin_password
-  db_name             = var.db_name
-  mysql_sku           = var.mysql_sku
+  source                = "./modules/db_tier"
+  resource_group_name   = azurerm_resource_group.rg_jukpabi.name
+  location              = azurerm_resource_group.rg_jukpabi.location
+  db_subnet_1_id        = module.networking.db_subnet_1_id
+  db_subnet_2_id        = module.networking.db_subnet_2_id
+  mysql_dns_zone_id     = module.networking.mysql_dns_zone_id
+  mysql_dns_zone_name   = module.networking.mysql_dns_zone_name
+  dns_vnet_link_id      = module.networking.dns_vnet_link_id
+  db_admin_username     = var.db_admin_username
+  db_admin_password     = var.db_admin_password
+  db_name               = var.db_name
+  mysql_sku             = var.mysql_sku
 }
 
 # --- Web Tier Module ---
+# Depends on networking for subnets and security for NSG
 module "web_tier" {
   source              = "./modules/web_tier"
   resource_group_name = azurerm_resource_group.rg_jukpabi.name
@@ -78,6 +84,7 @@ module "web_tier" {
 }
 
 # --- App Tier Module ---
+# Depends on networking, security and db_tier outputs
 module "app_tier" {
   source              = "./modules/app_tier"
   resource_group_name = azurerm_resource_group.rg_jukpabi.name
@@ -95,6 +102,7 @@ module "app_tier" {
 }
 
 # --- Load Balancer Module ---
+# Depends on web_tier and app_tier NIC outputs
 module "load_balancer" {
   source              = "./modules/load_balancer"
   resource_group_name = azurerm_resource_group.rg_jukpabi.name

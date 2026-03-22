@@ -1,28 +1,5 @@
-# --- Public IP for Web VM 1 ---
-resource "azurerm_public_ip" "web_pip_1_jukpabi" {
-  name                = "web-pip-1-jukpabi"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  zones               = ["1"]
-
-  tags = { tier = "web" }
-}
-
-# --- Public IP for Web VM 2 ---
-resource "azurerm_public_ip" "web_pip_2_jukpabi" {
-  name                = "web-pip-2-jukpabi"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  zones               = ["2"]
-
-  tags = { tier = "web" }
-}
-
 # --- Network Interface for Web VM 1 ---
+# No public IP — App Gateway handles public traffic
 resource "azurerm_network_interface" "web_nic_1_jukpabi" {
   name                = "web-nic-1-jukpabi"
   location            = var.location
@@ -32,13 +9,13 @@ resource "azurerm_network_interface" "web_nic_1_jukpabi" {
     name                          = "internal"
     subnet_id                     = var.web_subnet_1_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.web_pip_1_jukpabi.id
   }
 
   tags = { tier = "web" }
 }
 
 # --- Network Interface for Web VM 2 ---
+# No public IP — App Gateway handles public traffic
 resource "azurerm_network_interface" "web_nic_2_jukpabi" {
   name                = "web-nic-2-jukpabi"
   location            = var.location
@@ -48,7 +25,6 @@ resource "azurerm_network_interface" "web_nic_2_jukpabi" {
     name                          = "internal"
     subnet_id                     = var.web_subnet_2_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.web_pip_2_jukpabi.id
   }
 
   tags = { tier = "web" }
