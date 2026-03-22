@@ -111,7 +111,9 @@ When deploying always follow this order:
 | DB NSG  | 3306 | 10.0.3.0/23 (App Tier) |
 
 ## Error Handling
-- Standard_B1s unavailable → use Standard_D2s_v3
+- Standard_B1s VM unavailable in Canada Central → always use Standard_D2s_v3
+- Standard_B2s also sometimes unavailable → fallback is Standard_D2s_v3
 - MySQL region restricted → try East US 2 or West Europe
 - DNS Zone conflict → destroy manually from portal then re-apply
 - Resource Group not empty → add prevent_deletion_if_contains_resources = false
+- terraform init DNS timeout → sudo sh -c "echo 'nameserver 8.8.8.8' > /etc/resolv.conf"
