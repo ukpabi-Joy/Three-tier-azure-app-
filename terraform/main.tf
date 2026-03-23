@@ -35,6 +35,7 @@ module "networking" {
   app_subnet_2_cidr   = var.app_subnet_2_cidr
   db_subnet_1_cidr    = var.db_subnet_1_cidr
   db_subnet_2_cidr    = var.db_subnet_2_cidr
+  appgw_subnet_cidr   = var.appgw_subnet_cidr
 }
 
 # --- Security Module ---
@@ -52,25 +53,24 @@ module "security" {
 }
 
 # --- DB Tier Module ---
-# Depends on networking for subnets + DNS zone + DNS link
 # dns_vnet_link_id ensures DNS is linked before MySQL is created
 module "db_tier" {
-  source                = "./modules/db_tier"
-  resource_group_name   = azurerm_resource_group.rg_jukpabi.name
-  location              = azurerm_resource_group.rg_jukpabi.location
-  db_subnet_1_id        = module.networking.db_subnet_1_id
-  db_subnet_2_id        = module.networking.db_subnet_2_id
-  mysql_dns_zone_id     = module.networking.mysql_dns_zone_id
-  mysql_dns_zone_name   = module.networking.mysql_dns_zone_name
-  dns_vnet_link_id      = module.networking.dns_vnet_link_id
-  db_admin_username     = var.db_admin_username
-  db_admin_password     = var.db_admin_password
-  db_name               = var.db_name
-  mysql_sku             = var.mysql_sku
+  source              = "./modules/db_tier"
+  resource_group_name = azurerm_resource_group.rg_jukpabi.name
+  location            = azurerm_resource_group.rg_jukpabi.location
+  db_subnet_1_id      = module.networking.db_subnet_1_id
+  db_subnet_2_id      = module.networking.db_subnet_2_id
+  mysql_dns_zone_id   = module.networking.mysql_dns_zone_id
+  mysql_dns_zone_name = module.networking.mysql_dns_zone_name
+  dns_vnet_link_id    = module.networking.dns_vnet_link_id
+  db_admin_username   = var.db_admin_username
+  db_admin_password   = var.db_admin_password
+  db_name             = var.db_name
+  mysql_sku           = var.mysql_sku
 }
 
 # --- Web Tier Module ---
-# Depends on networking for subnets and security for NSG
+# Depends on networking and security outputs
 module "web_tier" {
   source              = "./modules/web_tier"
   resource_group_name = azurerm_resource_group.rg_jukpabi.name
@@ -108,6 +108,7 @@ module "load_balancer" {
   resource_group_name = azurerm_resource_group.rg_jukpabi.name
   location            = azurerm_resource_group.rg_jukpabi.location
   vnet_id             = module.networking.vnet_id
+  appgw_subnet_id     = module.networking.appgw_subnet_id
   web_subnet_1_id     = module.networking.web_subnet_1_id
   app_subnet_1_id     = module.networking.app_subnet_1_id
   web_nic_1_id        = module.web_tier.web_nic_1_id

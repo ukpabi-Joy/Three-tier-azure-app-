@@ -49,3 +49,9 @@ variable "db_subnet_2_cidr" {
   type        = string
   default     = "10.0.6.0/24"
 }
+
+variable "appgw_subnet_cidr" {
+  description = "CIDR for Application Gateway dedicated subnet"
+  type        = string
+  default     = "10.0.7.0/24"
+}

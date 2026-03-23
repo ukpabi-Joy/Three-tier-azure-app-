@@ -11,7 +11,7 @@ variable "subscription_id" {
 variable "location" {
   description = "Azure region"
   type        = string
-  default     = "Canada Central"
+  default     = "East US 2"
 }
 
 variable "resource_group_name" {
@@ -66,6 +66,12 @@ variable "db_subnet_2_cidr" {
   default     = "10.0.6.0/24"
 }
 
+variable "appgw_subnet_cidr" {
+  description = "CIDR for Application Gateway dedicated subnet"
+  type        = string
+  default     = "10.0.7.0/24"
+}
+
 # ==========================================
 # VM VARIABLES
 # ==========================================
@@ -73,7 +79,7 @@ variable "db_subnet_2_cidr" {
 variable "vm_size" {
   description = "VM size for all tiers"
   type        = string
-  default     = "Standard_B1ms"
+  default     = "Standard_D2s_v3"
 }
 
 variable "admin_username" {

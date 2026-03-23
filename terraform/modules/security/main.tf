@@ -49,7 +49,7 @@ resource "azurerm_network_security_group" "web_nsg_jukpabi" {
   # Deny all other inbound
   security_rule {
     name                       = "deny-all-inbound"
-    priority                   = 4096
+    priority                   = 4000
     direction                  = "Inbound"
     access                     = "Deny"
     protocol                   = "*"
@@ -124,7 +124,7 @@ resource "azurerm_network_security_group" "app_nsg_jukpabi" {
   # Deny all other inbound
   security_rule {
     name                       = "deny-all-inbound"
-    priority                   = 4096
+    priority                   = 4000
     direction                  = "Inbound"
     access                     = "Deny"
     protocol                   = "*"

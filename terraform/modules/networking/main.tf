@@ -6,7 +6,7 @@ resource "azurerm_virtual_network" "vnet_jukpabi" {
   resource_group_name = var.resource_group_name
 }
 
-# --- Web Subnet Zone 1 (Public) ---
+# --- Web Subnet 1 (Public - Zone 1) ---
 resource "azurerm_subnet" "web_subnet_1_jukpabi" {
   name                 = "web-subnet-1-jukpabi"
   resource_group_name  = var.resource_group_name
@@ -14,7 +14,7 @@ resource "azurerm_subnet" "web_subnet_1_jukpabi" {
   address_prefixes     = [var.web_subnet_1_cidr]
 }
 
-# --- Web Subnet Zone 2 (Public) ---
+# --- Web Subnet 2 (Public - Zone 2) ---
 resource "azurerm_subnet" "web_subnet_2_jukpabi" {
   name                 = "web-subnet-2-jukpabi"
   resource_group_name  = var.resource_group_name
@@ -22,7 +22,7 @@ resource "azurerm_subnet" "web_subnet_2_jukpabi" {
   address_prefixes     = [var.web_subnet_2_cidr]
 }
 
-# --- App Subnet Zone 1 (Private) ---
+# --- App Subnet 1 (Private - Zone 1) ---
 resource "azurerm_subnet" "app_subnet_1_jukpabi" {
   name                 = "app-subnet-1-jukpabi"
   resource_group_name  = var.resource_group_name
@@ -30,7 +30,7 @@ resource "azurerm_subnet" "app_subnet_1_jukpabi" {
   address_prefixes     = [var.app_subnet_1_cidr]
 }
 
-# --- App Subnet Zone 2 (Private) ---
+# --- App Subnet 2 (Private - Zone 2) ---
 resource "azurerm_subnet" "app_subnet_2_jukpabi" {
   name                 = "app-subnet-2-jukpabi"
   resource_group_name  = var.resource_group_name
@@ -38,7 +38,7 @@ resource "azurerm_subnet" "app_subnet_2_jukpabi" {
   address_prefixes     = [var.app_subnet_2_cidr]
 }
 
-# --- DB Subnet Zone 1 (Private — Delegated to MySQL) ---
+# --- DB Subnet 1 (Private - Zone 1 - Delegated to MySQL) ---
 resource "azurerm_subnet" "db_subnet_1_jukpabi" {
   name                 = "db-subnet-1-jukpabi"
   resource_group_name  = var.resource_group_name
@@ -48,13 +48,15 @@ resource "azurerm_subnet" "db_subnet_1_jukpabi" {
   delegation {
     name = "mysql-delegation"
     service_delegation {
-      name    = "Microsoft.DBforMySQL/flexibleServers"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+      name = "Microsoft.DBforMySQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+      ]
     }
   }
 }
 
-# --- DB Subnet Zone 2 (Private — Delegated to MySQL) ---
+# --- DB Subnet 2 (Private - Zone 2 - Delegated to MySQL) ---
 resource "azurerm_subnet" "db_subnet_2_jukpabi" {
   name                 = "db-subnet-2-jukpabi"
   resource_group_name  = var.resource_group_name
@@ -64,18 +66,20 @@ resource "azurerm_subnet" "db_subnet_2_jukpabi" {
   delegation {
     name = "mysql-delegation"
     service_delegation {
-      name    = "Microsoft.DBforMySQL/flexibleServers"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+      name = "Microsoft.DBforMySQL/flexibleServers"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+      ]
     }
   }
 }
 
-# --- App Gateway Subnet (required by Azure Application Gateway) ---
+# --- App Gateway Subnet (dedicated — required for App Gateway v2) ---
 resource "azurerm_subnet" "appgw_subnet_jukpabi" {
   name                 = "appgw-subnet-jukpabi"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vnet_jukpabi.name
-  address_prefixes     = ["10.0.7.0/24"]
+  address_prefixes     = [var.appgw_subnet_cidr]
 }
 
 # --- Private DNS Zone for MySQL ---

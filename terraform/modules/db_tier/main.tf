@@ -1,5 +1,4 @@
 # --- MySQL Flexible Server (Primary - Zone 1) ---
-# --- MySQL Flexible Server (Primary - Zone 1) ---
 resource "azurerm_mysql_flexible_server" "mysql_primary_jukpabi" {
   name                   = "mysql-primary-jukpabi"
   resource_group_name    = var.resource_group_name
@@ -23,9 +22,7 @@ resource "azurerm_mysql_flexible_server" "mysql_primary_jukpabi" {
     role = "primary"
   }
 
-  depends_on = [
-    var.dns_vnet_link_id
-  ]
+  depends_on = [var.dns_vnet_link_id]
 }
 
 # --- MySQL Database ---

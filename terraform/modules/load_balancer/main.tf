@@ -1,7 +1,6 @@
 # ==========================================
 # PUBLIC APPLICATION GATEWAY
-# Handles incoming traffic from internet
-# Routes to Web Tier VMs on port 80
+# Uses dedicated subnet — required for v2
 # ==========================================
 
 # --- Public IP for Application Gateway ---
@@ -11,7 +10,6 @@ resource "azurerm_public_ip" "appgw_pip_jukpabi" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones               = ["1", "2", "3"]
 
   tags = { role = "app-gateway" }
 }
@@ -21,19 +19,17 @@ resource "azurerm_application_gateway" "appgw_jukpabi" {
   name                = "appgw-jukpabi"
   location            = var.location
   resource_group_name = var.resource_group_name
-  zones               = ["1", "2"]
 
-  # SKU — Standard_v2 supports zone redundancy
   sku {
     name     = "Standard_v2"
     tier     = "Standard_v2"
     capacity = 2
   }
 
-  # Gateway IP Config — which subnet it lives in
+  # Uses dedicated App Gateway subnet
   gateway_ip_configuration {
     name      = "appgw-ip-config"
-    subnet_id = var.web_subnet_1_id
+    subnet_id = var.appgw_subnet_id
   }
 
   # Frontend Public IP
@@ -96,18 +92,16 @@ resource "azurerm_application_gateway" "appgw_jukpabi" {
 
 # ==========================================
 # INTERNAL LOAD BALANCER
-# Handles traffic from Web Tier to App Tier
-# Routes on port 3001 — private only
+# Private only — no public IP
+# Routes port 3001 to App Tier VMs
 # ==========================================
 
-# --- Internal Load Balancer ---
 resource "azurerm_lb" "internal_lb_jukpabi" {
   name                = "internal-lb-jukpabi"
   location            = var.location
   resource_group_name = var.resource_group_name
   sku                 = "Standard"
 
-  # Private frontend IP — no public IP!
   frontend_ip_configuration {
     name                          = "internal-lb-frontend"
     subnet_id                     = var.app_subnet_1_id
@@ -146,14 +140,14 @@ resource "azurerm_lb_rule" "app_lb_rule_jukpabi" {
   idle_timeout_in_minutes        = 4
 }
 
-# --- Associate App NIC 1 with Internal LB Backend Pool ---
+# --- Associate App NIC 1 with Internal LB ---
 resource "azurerm_network_interface_backend_address_pool_association" "app_nic_1_lb_assoc_jukpabi" {
   network_interface_id    = var.app_nic_1_id
   ip_configuration_name   = "internal"
   backend_address_pool_id = azurerm_lb_backend_address_pool.app_backend_pool_jukpabi.id
 }
 
-# --- Associate App NIC 2 with Internal LB Backend Pool ---
+# --- Associate App NIC 2 with Internal LB ---
 resource "azurerm_network_interface_backend_address_pool_association" "app_nic_2_lb_assoc_jukpabi" {
   network_interface_id    = var.app_nic_2_id
   ip_configuration_name   = "internal"

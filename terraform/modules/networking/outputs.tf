@@ -38,6 +38,11 @@ output "db_subnet_2_id" {
   value       = azurerm_subnet.db_subnet_2_jukpabi.id
 }
 
+output "appgw_subnet_id" {
+  description = "App Gateway dedicated subnet ID"
+  value       = azurerm_subnet.appgw_subnet_jukpabi.id
+}
+
 output "mysql_dns_zone_id" {
   description = "MySQL Private DNS Zone ID"
   value       = azurerm_private_dns_zone.mysql_dns_jukpabi.id
@@ -49,6 +54,6 @@ output "mysql_dns_zone_name" {
 }
 
 output "dns_vnet_link_id" {
-  description = "DNS VNet link ID — passed to db_tier to ensure DNS is linked before MySQL"
+  description = "DNS VNet link ID"
   value       = azurerm_private_dns_zone_virtual_network_link.dns_link_jukpabi.id
 }

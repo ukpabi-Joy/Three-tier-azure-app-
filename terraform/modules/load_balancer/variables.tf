@@ -13,8 +13,13 @@ variable "vnet_id" {
   type        = string
 }
 
+variable "appgw_subnet_id" {
+  description = "Dedicated App Gateway subnet ID"
+  type        = string
+}
+
 variable "web_subnet_1_id" {
-  description = "Web subnet 1 ID for App Gateway"
+  description = "Web subnet 1 ID"
   type        = string
 }
 

@@ -29,7 +29,7 @@ variable "mysql_dns_zone_name" {
 }
 
 variable "dns_vnet_link_id" {
-  description = "DNS VNet link ID — ensures link exists before MySQL server"
+  description = "DNS VNet link ID — ensures link exists before MySQL"
   type        = string
 }
 
